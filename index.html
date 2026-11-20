@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light only" />
+  <meta name="supported-color-schemes" content="light" />
+  <title>I 40 Anni di Giovanna</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: light only;
+
+      /* Sfondi chiari lilla / rosa */
+      --bg-page-top: #F9E9F3;
+      --bg-page-mid: #FBF2FC;
+      --bg-page-bot: #F2E0F5;
+      --lilac-main: #DEB2E4;
+      --lilac-soft: #EBC8F0;
+
+      /* Card e campi chiari */
+      --surface-white: #FFFFFF;
+      --surface-blush: #FDF7FE;
+      --surface-field: #F6E9F8;
+      --line-violet: rgba(90, 40, 112, 0.22);
+
+      /* Testi scuri sui toni del viola */
+      --ink-dark: #361545;
+      --ink-mid: #5A2870;
+      --ink-soft: #753E8C;
+      --ink-on-btn: #FDF8FE;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      color-scheme: light only;
+      background-color: #FBF2FC !important;
+      color: #361545 !important;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #FBF2FC !important;
+      background: linear-gradient(180deg, var(--bg-page-top) 0%, var(--bg-page-mid) 50%, var(--bg-page-bot) 100%);
+      color: #361545 !important;
+      -webkit-text-fill-color: currentColor;
+      overflow-x: hidden;
+    }
+
+    body.locked {
+      overflow: hidden;
+    }
+
+    /* --- SCHERMATA INIZIALE: BUSTA CARTA REALISTICA + SIGILLO CERALACCA --- */
+    #envelope-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background-color: #ebe4e1 !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      overflow: hidden;
+      filter: none;
+      transition: opacity 0.7s ease, visibility 0.7s ease;
+    }
+
+    #envelope-gate.is-done {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Grana carta cottone realistica applicata a tutti i lembi */
+    .paper-texture {
+      background-color: #f4efec !important;
+      background-image:
+        url('carta-busta.jpg'),
+        radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.55), rgba(214, 203, 198, 0.45)),
+        repeating-linear-gradient(0deg, rgba(120, 105, 98, 0.025) 0px, rgba(120, 105, 98, 0.025) 1px, transparent 1px, transparent 3px),
+        repeating-linear-gradient(90deg, rgba(120, 105, 98, 0.025) 0px, rgba(120, 105, 98, 0.025) 1px, transparent 1px, transparent 3px);
+      background-size: cover, 100% 100%, 4px 4px, 4px 4px;
+      background-position: center;
+    }
+
+    .gate-flap-left {
+      position: absolute;
+      inset: 0;
+      clip-path: polygon(0 0, 52% 52%, 0 100%);
+      filter: drop-shadow(3px 0 8px rgba(45, 34, 30, 0.16));
+      transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 2;
+    }
+
+    .gate-flap-right {
+      position: absolute;
+      inset: 0;
+      clip-path: polygon(100% 0, 100% 100%, 48% 52%);
+      filter: drop-shadow(-3px 0 8px rgba(45, 34, 30, 0.16));
+      transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 2;
+    }
+
+    .gate-bottom {
+      position: absolute;
+      inset: 0;
+      clip-path: polygon(0 100%, 50% 47%, 100% 100%);
+      filter: drop-shadow(0 -4px 10px rgba(45, 34, 30, 0.18));
+      transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 3;
+    }
+
+    .gate-top-fold {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 56%;
+      clip-path: polygon(0 0, 100% 0, 50% 96%);
+      filter: drop-shadow(0 8px 14px rgba(40, 30, 26, 0.24));
+      transform-origin: top center;
+      transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease 0.25s;
+      z-index: 4;
+    }
+
+    #envelope-gate.opening .gate-top-fold {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+
+    #envelope-gate.opening .gate-flap-left {
+      transform: translateX(-100%);
+    }
+
+    #envelope-gate.opening .gate-flap-right {
+      transform: translateX(100%);
+    }
+
+    #envelope-gate.opening .gate-bottom {
+      transform: translateY(100%);
+    }
+
+    /* Animazione morbida di "allarme rosso" sul bordo del cartiglio */
+    @keyframes secretAlertPulse {
+      0%, 100% {
+        border-color: rgba(200, 35, 51, 0.45);
+        box-shadow:
+          0 8px 22px rgba(45, 26, 54, 0.14),
+          0 0 0 0 rgba(200, 35, 51, 0.38);
+      }
+      50% {
+        border-color: rgba(200, 35, 51, 0.95);
+        box-shadow:
+          0 8px 22px rgba(45, 26, 54, 0.16),
+          0 0 0 7px rgba(200, 35, 51, 0);
+      }
+    }
+
+    @keyframes redDotBlink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.82); }
+    }
+
+    /* Messaggio "SORPRESA / SEGRETO" con stesso font, due colori e allarme rosso */
+    .surprise-notice {
+      position: absolute;
+      top: max(36px, calc(env(safe-area-inset-top) + 24px));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      width: min(90%, 390px);
+      padding: 14px 18px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.92) !important;
+      border: 1.5px solid rgba(200, 35, 51, 0.65);
+      backdrop-filter: blur(6px);
+      text-align: center;
+      animation: secretAlertPulse 2s infinite ease-in-out;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .surprise-line-main {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ink-dark) !important;
+      line-height: 1.45;
+    }
+
+    .surprise-line-main::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #c82333 !important;
+      box-shadow: 0 0 6px rgba(200, 35, 51, 0.75);
+      flex-shrink: 0;
+      animation: redDotBlink 1.4s infinite ease-in-out;
+    }
+
+    .surprise-line-sub {
+      margin-top: 4px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #a61c2b !important;
+      line-height: 1.45;
+    }
+
+    #envelope-gate.opening .surprise-notice {
+      opacity: 0;
+      animation: none;
+      transform: translate(-50%, -10px);
+    }
+
+    /* Sigillo in ceralacca proporzionato al centro */
+    .seal-center {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    #envelope-gate.opening .seal-center {
+      opacity: 0;
+      transform: scale(0.82);
+    }
+
+    .wax-seal-img {
+      width: clamp(135px, 28vw, 175px);
+      height: clamp(135px, 28vw, 175px);
+      object-fit: contain;
+      filter: drop-shadow(0 12px 20px rgba(42, 26, 36, 0.3));
+      display: none;
+    }
+
+    .wax-seal-btn {
+      position: relative;
+      width: clamp(132px, 26vw, 168px);
+      height: clamp(132px, 26vw, 168px);
+      border-radius: 54% 46% 52% 48% / 48% 54% 46% 52%;
+      background:
+        radial-gradient(circle at 32% 26%, #efd4f2 0%, #deb2e4 42%, #be86c6 82%, #9d66a5 100%);
+      color: #4f2559 !important;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: clamp(2.4rem, 6.5vw, 3.1rem);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 12px 24px rgba(48, 28, 52, 0.3),
+        inset 0 4px 8px rgba(255, 255, 255, 0.55),
+        inset 0 -5px 10px rgba(82, 41, 90, 0.35);
+    }
+
+    .wax-seal-btn::before {
+      content: "";
+      position: absolute;
+      inset: 15px;
+      border-radius: 50%;
+      border: 2px solid rgba(92, 44, 102, 0.28);
+      box-shadow:
+        inset 0 2px 4px rgba(74, 34, 82, 0.3),
+        0 1px 2px rgba(255, 255, 255, 0.55);
+      pointer-events: none;
+    }
+
+    .wax-seal-btn span {
+      position: relative;
+      z-index: 2;
+      text-shadow:
+        0 1px 1px rgba(255, 255, 255, 0.55),
+        0 -1px 1px rgba(74, 34, 82, 0.35);
+    }
+
+    /* Scritta in basso sulla busta */
+    .gate-caption {
+      position: absolute;
+      bottom: max(48px, calc(env(safe-area-inset-bottom) + 34px));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      width: 90%;
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 0.88rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--ink-dark) !important;
+      font-weight: 600;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.75);
+      transition: opacity 0.35s ease;
+    }
+
+    #envelope-gate.opening .gate-caption {
+      opacity: 0;
+    }
+
+    /* --- PULSANTE AUDIO IN BASSO A DESTRA --- */
+    #audio-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--surface-white) !important;
+      border: 1px solid var(--line-violet);
+      color: var(--ink-mid) !important;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 900;
+      filter: none;
+      box-shadow: 0 6px 18px rgba(54, 21, 69, 0.12);
+    }
+
+    /* --- SEZIONE 1: HERO CHIARA LILLA / ROSA --- */
+    .hero {
+      position: relative;
+      height: 100dvh;
+      min-height: 100dvh;
+      max-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      padding: 44px 24px max(34px, calc(env(safe-area-inset-bottom) + 24px));
+      background-color: var(--bg-page-mid) !important;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(222, 178, 228, 0.55) 0%, rgba(249, 233, 243, 0.35) 58%, transparent 88%),
+        linear-gradient(180deg, var(--bg-page-top) 0%, var(--bg-page-mid) 65%, var(--bg-page-bot) 100%);
+      filter: none;
+    }
+
+    .hero-stack {
+      margin: auto 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 26px 24px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.72) !important;
+      border: 1px solid var(--line-violet);
+      box-shadow: 0 12px 28px rgba(90, 40, 112, 0.07);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.95s ease 0.25s, transform 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.25s;
+    }
+
+    body.envelope-opened .hero-stack {
+      opacity: 1;
+      transform: translateY(-16px);
+    }
+
+    .hero-top {
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ink-mid) !important;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: clamp(3.1rem, 12vw, 4.6rem);
+      line-height: 1.08;
+      letter-spacing: 0.5px;
+      color: var(--ink-dark) !important;
+    }
+
+    .hero-divider {
+      width: 48px;
+      height: 1px;
+      background: var(--ink-mid);
+      opacity: 0.35;
+      margin: 6px 0 4px;
+    }
+
+    .hero-date {
+      margin-top: 0;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ink-soft) !important;
+    }
+
+    .scroll-hint {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 2.2px;
+      text-transform: uppercase;
+      color: var(--ink-mid) !important;
+      opacity: 0.9;
+      flex-shrink: 0;
+    }
+
+    /* --- ANIMAZIONE LENTA DURANTE LO SCORRIMENTO --- */
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.95s ease, transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: opacity, transform;
+    }
+
+    .reveal-on-scroll.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-stack,
+      .reveal-on-scroll,
+      .surprise-notice,
+      .surprise-line-main::before {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+        transition: none !important;
+      }
+      body.envelope-opened .hero-stack {
+        transform: translateY(-16px) !important;
+      }
+    }
+
+    /* --- SEZIONI INTERNE --- */
+    .section {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 72px 20px;
+      text-align: center;
+      filter: none;
+    }
+
+    .section-kicker {
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--ink-mid) !important;
+      margin-bottom: 10px;
+    }
+
+    .section-heading {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 2.3rem;
+      font-weight: 600;
+      color: var(--ink-dark) !important;
+      margin-bottom: 10px;
+    }
+
+    .section-sub {
+      font-size: 0.92rem;
+      color: var(--ink-soft) !important;
+      margin-bottom: 28px;
+    }
+
+    /* --- COUNTDOWN --- */
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .time-box {
+      background: linear-gradient(145deg, var(--surface-white), var(--surface-blush)) !important;
+      border: 1px solid var(--line-violet);
+      border-radius: 12px;
+      padding: 22px 12px;
+      box-shadow: 0 8px 20px rgba(90, 40, 112, 0.06);
+    }
+
+    .time-num {
+      font-family: 'Cinzel', serif;
+      font-size: 2rem;
+      color: var(--ink-mid) !important;
+      font-weight: 600;
+    }
+
+    .time-label {
+      margin-top: 6px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--ink-soft) !important;
+    }
+
+    /* --- CARD EVENTO / LOCATION --- */
+    .event-card {
+      background: var(--surface-white) !important;
+      border: 1px solid var(--line-violet);
+      border-radius: 14px;
+      overflow: hidden;
+      text-align: left;
+      margin-bottom: 22px;
+      filter: none;
+      box-shadow: 0 10px 24px rgba(90, 40, 112, 0.07);
+    }
+
+    .event-banner {
+      position: relative;
+      height: 210px;
+      background-image: url('images.jpg');
+      background-color: var(--lilac-soft) !important;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 16px 20px;
+      filter: none;
+    }
+
+    .event-banner::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(54, 21, 69, 0.65) 0%, rgba(222, 178, 228, 0.12) 55%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .badge {
+      position: relative;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.92) !important;
+      border: 1px solid var(--line-violet);
+      color: var(--ink-dark) !important;
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 2.2px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 6px;
+    }
+
+    .event-body {
+      padding: 20px;
+    }
+
+    .event-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--ink-dark) !important;
+      margin-bottom: 4px;
+    }
+
+    .event-place {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: var(--ink-mid) !important;
+      margin-bottom: 14px;
+    }
+
+    .event-address {
+      font-size: 0.9rem;
+      color: var(--ink-soft) !important;
+      margin-bottom: 14px;
+    }
+
+    .btn-outline {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line-violet);
+      background: var(--surface-field) !important;
+      color: var(--ink-dark) !important;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 2.2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      background: rgba(222, 178, 228, 0.42) !important;
+      border-color: var(--ink-mid);
+    }
+
+    .extra-info {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: var(--surface-field) !important;
+      border: 1px solid var(--line-violet);
+      font-size: 0.88rem;
+      color: var(--ink-dark) !important;
+      line-height: 1.6;
+    }
+
+    .extra-info.show {
+      display: block;
+    }
+
+    /* --- RSVP --- */
+    .rsvp-box {
+      background: var(--surface-white) !important;
+      border: 1px solid var(--line-violet);
+      border-radius: 14px;
+      padding: 22px;
+      text-align: left;
+      filter: none;
+      box-shadow: 0 10px 24px rgba(90, 40, 112, 0.07);
+    }
+
+    .rsvp-field-label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--ink-soft) !important;
+      margin-bottom: 8px;
+    }
+
+    .rsvp-field-label strong {
+      color: var(--ink-dark) !important;
+    }
+
+    select.rsvp-select {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--line-violet);
+      background: var(--surface-field) !important;
+      color: var(--ink-dark) !important;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.92rem;
+      margin-bottom: 16px;
+    }
+
+    .choice-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid var(--line-violet);
+      background: var(--surface-blush) !important;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .choice-card.selected {
+      border-color: var(--ink-mid);
+      background: rgba(222, 178, 228, 0.36) !important;
+    }
+
+    .choice-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.25rem;
+      color: var(--ink-dark) !important;
+    }
+
+    .choice-desc {
+      font-size: 0.8rem;
+      color: var(--ink-soft) !important;
+      margin-top: 2px;
+    }
+
+    .choice-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: var(--ink-mid) !important;
+      text-transform: uppercase;
+    }
+
+    .rsvp-form {
+      display: none;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-violet);
+    }
+
+    .rsvp-form.active {
+      display: block;
+    }
+
+    .rsvp-input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line-violet);
+      background: var(--surface-field) !important;
+      color: var(--ink-dark) !important;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .rsvp-input::placeholder {
+      color: rgba(117, 62, 140, 0.65);
+    }
+
+    .rsvp-submit {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid var(--ink-mid);
+      border-radius: 8px;
+      background: var(--ink-mid) !important;
+      color: var(--ink-on-btn) !important;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .rsvp-submit:hover {
+      background: var(--ink-dark) !important;
+    }
+
+    .rsvp-feedback {
+      margin-top: 12px;
+      font-size: 0.88rem;
+      color: var(--ink-mid) !important;
+    }
+
+    /* --- CHIUSURA --- */
+    .footer-end {
+      padding: 56px 20px 80px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.55) !important;
+      border-top: 1px solid var(--line-violet);
+    }
+
+    .footer-end p {
+      color: var(--ink-soft) !important;
+    }
+
+    .footer-sign {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 2rem;
+      color: var(--ink-dark) !important;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body class="locked">
+
+  <audio id="bgMusic" src="musica-festa.mp3" loop preload="auto"></audio>
+  <button id="audio-btn" type="button" aria-label="Audio">♪</button>
+
+  <div id="envelope-gate" role="button" tabindex="0" aria-label="Apri l'invito">
+    <div class="gate-flap-left paper-texture"></div>
+    <div class="gate-flap-right paper-texture"></div>
+    <div class="gate-bottom paper-texture"></div>
+    <div class="gate-top-fold paper-texture"></div>
+
+    <div class="surprise-notice">
+      <div class="surprise-line-main">Questa festa è una sorpresa</div>
+      <div class="surprise-line-sub">Per favore mantieni il segreto.</div>
+    </div>
+
+    <div class="seal-center">
+      <img src="sigillo.png" alt="Sigillo 40" class="wax-seal-img" onload="this.style.display='block'; this.nextElementSibling.style.display='none';" onerror="this.style.display='none';" />
+      <div class="wax-seal-btn"><span>40</span></div>
+    </div>
+
+    <div class="gate-caption">I 40 Anni di Giovanna</div>
+  </div>
+
+  <header class="hero">
+    <div class="scroll-hint" style="visibility: hidden;">.</div>
+
+    <div class="hero-stack">
+      <div class="hero-top">I 40 Anni di</div>
+      <h1 class="hero-title">Giovanna</h1>
+      <div class="hero-divider"></div>
+      <div class="hero-date" id="heroDate">12 MARZO 2027</div>
+    </div>
+
+    <div class="scroll-hint">Scorri</div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="section-kicker reveal-on-scroll">Il grande giorno si avvicina</div>
+      <h2 class="section-heading reveal-on-scroll">Conto alla rovescia</h2>
+      <p class="section-sub reveal-on-scroll">Manca pochissimo per festeggiare insieme</p>
+
+      <div class="countdown-grid reveal-on-scroll">
+        <div class="time-box">
+          <div class="time-num" id="cd-days">00</div>
+          <div class="time-label">Giorni</div>
+        </div>
+        <div class="time-box">
+          <div class="time-num" id="cd-hours">00</div>
+          <div class="time-label">Ore</div>
+        </div>
+        <div class="time-box">
+          <div class="time-num" id="cd-minutes">00</div>
+          <div class="time-label">Minuti</div>
+        </div>
+        <div class="time-box">
+          <div class="time-num" id="cd-seconds">00</div>
+          <div class="time-label">Secondi</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-kicker reveal-on-scroll">La serata</div>
+      <h2 class="section-heading reveal-on-scroll">Dettagli della festa</h2>
+      <p class="section-sub reveal-on-scroll">Tutti i riferimenti per raggiungerci</p>
+
+      <div class="event-card reveal-on-scroll">
+        <div class="event-banner">
+          <span class="badge">Festa</span>
+          <span class="badge" id="eventTimeBadge">ORE 20:00</span>
+        </div>
+        <div class="event-body">
+          <h3 class="event-title" id="eventLocationName">Villa Chiara</h3>
+          <div class="event-place" id="eventCity">Giugliano in Campania (NA)</div>
+          <p class="event-address" id="eventAddress">Via Arco S. Antonio, 28</p>
+
+          <button class="btn-outline" type="button" id="toggleInfoBtn">Info serata</button>
+          <div class="extra-info" id="extraInfoBox">
+            Dress code: elegante. Parcheggio disponibile in loco.
+          </div>
+
+          <a class="btn-outline" id="mapsLink" href="https://maps.google.com/?q=Villa+Chiara+Via+Arco+S.+Antonio+28+Giugliano+in+Campania" target="_blank" rel="noopener">
+            Apri in Maps
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-kicker reveal-on-scroll">È gradita la conferma</div>
+      <h2 class="section-heading reveal-on-scroll">Conferma la tua presenza</h2>
+      <p class="section-sub reveal-on-scroll">Facci sapere se ci sarai</p>
+
+      <div class="rsvp-box reveal-on-scroll">
+        <label class="rsvp-field-label" for="guestsCount">
+          <strong>Quanti partecipanti sarete?</strong> — Seleziona un numero da 1 a 8
+        </label>
+        <select id="guestsCount" class="rsvp-select">
+          <option value="1">1 partecipante</option>
+          <option value="2">2 partecipanti</option>
+          <option value="3">3 partecipanti</option>
+          <option value="4">4 partecipanti</option>
+          <option value="5">5 partecipanti</option>
+          <option value="6">6 partecipanti</option>
+          <option value="7">7 partecipanti</option>
+          <option value="8">8 partecipanti</option>
+        </select>
+
+        <div class="choice-card" id="choiceYes">
+          <div>
+            <div class="choice-title">Sì, con gioia!</div>
+            <div class="choice-desc">Clicca qui per confermare la presenza!</div>
+          </div>
+          <span class="choice-tag">Apri</span>
+        </div>
+
+        <div class="choice-card" id="choiceNo">
+          <div>
+            <div class="choice-title">Purtroppo no...</div>
+            <div class="choice-desc">Clicca qui per comunicare l'assenza.</div>
+          </div>
+          <span class="choice-tag">Apri</span>
+        </div>
+
+        <form class="rsvp-form" id="rsvpForm">
+          <input class="rsvp-input" type="text" id="guestName" placeholder="Nome e cognome" required />
+          <input class="rsvp-input" type="text" id="guestNotes" placeholder="Intolleranze o allergie (opzionale)" />
+          <button class="rsvp-submit" type="submit">Invia conferma su WhatsApp</button>
+          <div class="rsvp-feedback" id="rsvpFeedback"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer-end reveal-on-scroll">
+    <p>Ti aspetto con piacere.</p>
+    <div class="footer-sign">Giovanna ringrazia</div>
+    <p class="hero-date" style="font-size:0.8rem; margin-top:6px;">12-03-2027</p>
+  </footer>
+
+  <script>
+    const EVENT_CONFIG = {
+      targetDate: "2027-03-12T20:00:00",
+      displayDate: "12 MARZO 2027",
+      timeLabel: "ORE 20:00",
+      locationName: "Villa Chiara / Swami Eventi",
+      city: "Giugliano in Campania (NA)",
+      address: "Via Arco S. Antonio, 28",
+      mapsUrl: "https://maps.google.com/?q=Villa+Chiara+Via+Arco+S.+Antonio+28+Giugliano+in+Campania",
+      whatsappPhone: "393335318510"
+    };
+
+    document.getElementById("heroDate").textContent = EVENT_CONFIG.displayDate;
+    document.getElementById("eventTimeBadge").textContent = EVENT_CONFIG.timeLabel;
+    document.getElementById("eventLocationName").textContent = EVENT_CONFIG.locationName;
+    document.getElementById("eventCity").textContent = EVENT_CONFIG.city;
+    document.getElementById("eventAddress").textContent = EVENT_CONFIG.address;
+    document.getElementById("mapsLink").href = EVENT_CONFIG.mapsUrl;
+
+    const gate = document.getElementById("envelope-gate");
+    const audio = document.getElementById("bgMusic");
+    const audioBtn = document.getElementById("audio-btn");
+    let gateStarted = false;
+
+    function completeGate() {
+      document.body.classList.remove("locked");
+      document.body.classList.add("envelope-opened");
+      if (gate) {
+        gate.classList.add("is-done");
+        gate.style.display = "none";
+      }
+    }
+
+    function openGate() {
+      if (gateStarted) return;
+      gateStarted = true;
+
+      if (audio) {
+        audio.volume = 0.65;
+        audio.play().catch(() => {});
+      }
+
+      if (gate) {
+        gate.classList.add("opening");
+        setTimeout(completeGate, 680);
+      } else {
+        completeGate();
+      }
+    }
+
+    if (gate) {
+      gate.addEventListener("click", openGate);
+      gate.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openGate();
+        }
+      });
+    }
+
+    audioBtn.addEventListener("click", () => {
+      if (!audio) return;
+      if (audio.paused) {
+        audio.play().catch(() => {});
+        audioBtn.textContent = "♪";
+      } else {
+        audio.pause();
+        audioBtn.textContent = "🔇";
+      }
+    });
+
+    function updateCountdown() {
+      const target = new Date(EVENT_CONFIG.targetDate).getTime();
+      const now = Date.now();
+      const diff = Math.max(0, target - now);
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById("cd-days").textContent = String(days).padStart(2, "0");
+      document.getElementById("cd-hours").textContent = String(hours).padStart(2, "0");
+      document.getElementById("cd-minutes").textContent = String(minutes).padStart(2, "0");
+      document.getElementById("cd-seconds").textContent = String(seconds).padStart(2, "0");
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    document.getElementById("toggleInfoBtn").addEventListener("click", () => {
+      document.getElementById("extraInfoBox").classList.toggle("show");
+    });
+
+    let attendanceChoice = "Sì, con gioia!";
+    let isAttending = true;
+    const choiceYes = document.getElementById("choiceYes");
+    const choiceNo = document.getElementById("choiceNo");
+    const rsvpForm = document.getElementById("rsvpForm");
+    const feedback = document.getElementById("rsvpFeedback");
+    const guestsSelect = document.getElementById("guestsCount");
+
+    function selectChoice(choiceText, attendingFlag, activeCard, otherCard) {
+      attendanceChoice = choiceText;
+      isAttending = attendingFlag;
+      activeCard.classList.add("selected");
+      otherCard.classList.remove("selected");
+      rsvpForm.classList.add("active");
+      feedback.textContent = "";
+    }
+
+    choiceYes.addEventListener("click", () => {
+      selectChoice("Sì, con gioia!", true, choiceYes, choiceNo);
+    });
+
+    choiceNo.addEventListener("click", () => {
+      selectChoice("Purtroppo no", false, choiceNo, choiceYes);
+    });
+
+    rsvpForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("guestName").value.trim();
+      const notes = document.getElementById("guestNotes").value.trim();
+      const count = parseInt(guestsSelect.value, 10) || 1;
+      const partecipantiLabel = count === 1 ? "1 partecipante" : `${count} partecipanti`;
+
+      let message = "";
+      if (isAttending) {
+        message = `Ciao Antonella! Confermo la mia presenza per la festa. (${EVENT_CONFIG.displayDate}) a ${EVENT_CONFIG.locationName}.\n` +
+                  `Nome: ${name}\n` +
+                  `Numero partecipanti: ${partecipantiLabel}`;
+      } else {
+        message = `Ciao Antonella, purtroppo non potrò esserci alla festa. (${EVENT_CONFIG.displayDate}).\n` +
+                  `Nome: ${name}`;
+      }
+
+      if (notes) {
+        message += `\nNote: ${notes}`;
+      }
+
+      const cleanPhone = EVENT_CONFIG.whatsappPhone.replace(/\D/g, "");
+      const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+
+      feedback.innerHTML = `Messaggio preparato per <strong>${name}</strong> (${isAttending ? partecipantiLabel : "Assente"}). Se WhatsApp non si apre da solo, <a href="${whatsappUrl}" target="_blank" rel="noopener" style="color:var(--ink-dark);text-decoration:underline;">clicca qui</a>.`;
+
+      window.open(whatsappUrl, "_blank", "noopener");
+      rsvpForm.reset();
+    });
+
+    // --- APPARIZIONE LENTA ALLO SCORRIMENTO ---
+    const revealElements = document.querySelectorAll(".reveal-on-scroll");
+
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        {
+          threshold: 0.14,
+          rootMargin: "0px 0px -30px 0px"
+        }
+      );
+
+      revealElements.forEach((el) => observer.observe(el));
+    } else {
+      revealElements.forEach((el) => el.classList.add("is-visible"));
+    }
+  </script>
+</body>
+</html>
